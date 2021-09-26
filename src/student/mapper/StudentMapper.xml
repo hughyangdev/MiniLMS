@@ -1,0 +1,177 @@
+<?xml version="1.0" encoding="UTF-8" ?> 
+<!DOCTYPE mapper  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"  
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="student.mapper.StudentMapper">
+
+	<!-- 학생목록에 추가 -->
+	<insert id="addStudent" parameterType="Student">
+		insert into
+		student
+		values(student_seq.nextval,#{major},#{sname},#{sphone},#{saddr},
+		#{semail},#{spwd},0,0,(select semester from semester where grade=1 and
+		semester=1),(select * from
+		grade where
+		grade=1),#{sid},#{sgender},sysdate)
+	</insert>
+
+	<select id="selectUserByUserid" resultType="Student"
+		parameterType="string">
+		select * from student where sid=#{userid}
+	</select>
+
+	<select id="selectStduentBySnum" resultType="Student"
+		parameterType="_int">
+		select * from Student where snum=#{num}
+	</select>
+
+	<select parameterType="string" id="idCheck" resultType="int">select
+		count(*) from (select pid from PROFESSOR UNION all select sid from
+		STUDENT union all select mid from MANAGER) a where pid=#{userid}
+	</select>
+
+	<select parameterType="hashMap" id="selectSubject"
+		resultType="ClassList">
+		select * from ( select rownum rn, a.*
+		from (select
+		c.subjectcode,c.lname,c.credit,
+		p.pname,c.classnum from
+		classlist c join
+		professor p
+		on c.pnum = p.pnum where lname like '%' ||
+		#{subjectName} ||
+		'%' order by c.subjectCode )a) where rn between #{start}
+		and
+		#{end}
+	</select>
+
+	<insert id="registerRest" parameterType="Rest">
+		insert into StopSemester
+		values(#{ssnum}, #{ssReason},
+		#{ssyear},#{sssemester},#{resultState},sysdate)
+	</insert>
+
+	<select id="checkRestBySnum" parameterType="int"
+		resultType="Rest">
+		select * from stopsemester where ssnum=#{snum}
+	</select>
+
+	<select id="getTotalSubCount" resultType="int">
+		select count(lnum) from
+		classlist
+	</select>
+
+	<update id="editProfInfo" parameterType="hashMap">
+		update student set
+		sphone= #{phone} , semail=#{email} where snum =#{snum}
+	</update>
+
+	<delete id="deleteRest" parameterType="int">
+		delete from stopsemester
+		where ssnum= #{num}
+	</delete>
+
+	<insert id="registerClass" parameterType="hashMap">
+		<selectKey keyProperty="selectLnum" resultType="int"
+			order="BEFORE">
+			select lnum from classList where lname
+			=#{subject}
+		</selectKey>
+
+		insert into registclass(snum, lnum, rstate)
+		values(#{snum},
+		#{selectLnum}, 0)
+	</insert>
+
+	<select id="getAllMyClass" parameterType="int"
+		resultType="RegistClass">
+		select c.SUBJECTCODE, c.LNAME, p.PNAME,c.CLASSNUM ,
+		c.CREDIT, r.rstate from registclass r join classList c
+		on r.lnum =
+		c.lnum join
+		professor p on c.pnum= p.pnum where snum
+		=#{snum} and rstate=0
+	</select>
+	
+	<select id="getMyClassForCheck" parameterType="int"
+		resultType="RegistClass">
+		select c.SUBJECTCODE, c.LNAME, p.PNAME,c.CLASSNUM ,
+		c.CREDIT, r.rstate from registclass r join classList c
+		on r.lnum =
+		c.lnum join
+		professor p on c.pnum= p.pnum where snum
+		=#{snum}
+	</select>
+
+	<delete id="deleteClass" parameterType="hashMap">
+		delete from registClass
+		where snum=#{snum}
+		and lnum= (select lnum from classList where
+		lname=#{lname})
+	</delete>
+
+	<select id="getMyClassGrade" parameterType="int"
+		resultType="RegistClass">
+		select c.SUBJECTCODE,
+		c.LNAME, p.PNAMe from registclass r
+		join classList c
+		on r.lnum = c.lnum
+		join
+		professor p on c.pnum= p.pnum
+		where snum
+		=11 and rstate=1
+	</select>
+
+	<select id="getClassCount" parameterType="int" resultType="int">
+		select count(lnum)from registClass where snum=#{snum} and rstate=1
+	</select>
+
+	<select id="getAllClassCount" parameterType="int"
+		resultType="int">
+		select count(lnum)from registClass where snum=#{snum}
+	</select>
+
+	<update id="changePwd" parameterType="hashMap">
+		update student set
+		spwd=#{pwd} where snum=#{num}
+	</update>
+
+	<select id="selectCompleteClassForTable"
+		resultType="RegistClass">
+		select p.pname, c.CLASSNUM,cday, ctime from registclass r
+		join classlist c
+		on r.lnum= c.lnum
+		join professor p
+		on c.pnum = p.pnum
+		where r.snum=#{snum} and r.rstate=1
+	</select>
+	
+	<!-- 탈퇴하기 -->
+	<update id="changeUserState" parameterType="int">
+		update student set
+		sstate=-1 where snum= #{snum}
+	</update>
+
+	<update id="changeUserStateAgain" parameterType="int">
+		update student
+		set
+		sstate=0 where snum= #{snum}
+	</update>
+
+	<select id="selectSubjectByProf" parameterType="hashMap"
+		resultType="ClassList">
+		select * from ( select rownum rn, a.*
+		from (select
+		c.subjectcode,c.lname,c.credit,
+		p.pname,c.classnum from
+		classlist c join
+		professor p
+		on c.pnum = p.pnum where pname like '%' ||
+		#{subjectName} ||
+		'%'
+		order by c.subjectCode )a) where rn between
+		#{start}
+		and
+		#{end}
+	</select>
+
+</mapper>

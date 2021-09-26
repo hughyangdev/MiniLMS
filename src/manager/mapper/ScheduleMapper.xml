@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8" ?> 
+<!DOCTYPE mapper  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"  
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="manager.mapper.ScheduleMapper">
+
+	<!-- 학사일정 목록 -->
+	<select id="scheduleList" resultType="Schedule">
+		select * from schedule order by schnum desc
+	</select>
+
+	<!-- 학사일정 추가 -->
+	<insert id="scheduleInsert" parameterType="Schedule">
+		insert into	Schedule
+		values(schedule_seq.nextval,#{schstartdate},#{schenddate},#{schcontents})
+	</insert>
+	
+	<!-- 학사일정 수정 -->
+	<update id="scheduleUpdate" parameterType="Schedule">
+		update schedule set schnum=#{schnum}, schstartdate=#{schstartdate}, 
+			schenddate=#{schenddate}, schcontents=#{schcontents} where schnum=#{schnum}
+	</update>
+	
+	<!-- 학사일정 삭제 -->
+	<delete id="scheduleDelete" parameterType="int">
+		delete from Schedule where schnum = #{schnum}
+	</delete>
+	
+	
+</mapper>

@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="manager.mapper.NoticeMapper">
+	<!-- 공지사항 글 등록 -->
+	<insert id="noticeInsert" parameterType="Notice">
+		insert into notice
+		(nnum, mnum, nwriter, ntitle, ncontents, ndate, readnum,  
+		nreference, originFilename, filesize)
+		values(notice_seq.nextval, null,
+		#{nwriter}, #{ntitle}, #{ncontents:VARCHAR}, sysdate, #{readnum:NUMERIC}, 
+		#{nreference:VARCHAR}, #{originFilename:VARCHAR}, #{filesize:NUMERIC})
+	</insert>
+	
+	<!-- 공지사항 글 수 가져오기 -->
+	<select id="getTotalCount" resultType="int">
+		select count(nnum) from notice
+	</select>
+	
+	<!-- 공지사항 글 가져오기 -->
+	<select id="getAllNoticeIndex" resultType="Notice">
+		select * from(
+		select * from notice order by nnum desc)
+		where rownum <![CDATA[ <= ]]> 3
+	</select>
+	
+	<!-- 공지사항 글 가져오기(페이징) -->
+	<select id="getAllNotice" parameterType="hashMap" resultType="Notice">
+		select * from (select rownum rn, a.* from 
+		(select * from notice order by nnum desc) a)
+		where rn between #{start} and #{end}
+	</select>
+	
+	<!-- 공지사항 조회수 증가 -->
+	<update id="updateReadnum" parameterType="int">
+		update notice set readnum = readnum+1
+		where nnum = #{nnum}
+	</update>
+	
+	<!-- 글번호로 공지사항 내용 가져오기 -->
+	<select id="noticeView" parameterType="int" resultType="Notice">
+		select * from notice where nnum = #{nnum}
+	</select>
+	
+	<!-- 글번호에 따른 글 삭제 -->
+	<delete id="deleteNotice" parameterType="int">
+		delete from notice where nnum = #{nnum}
+	</delete>
+	
+	<!-- 공지사항 글 수정 -->
+	<update id="updateNotice" parameterType="Notice">
+		update notice set ntitle=#{ntitle}, ncontents=#{ncontents:VARCHAR},
+			nreference=#{nreference:VARCHAR}, originFilename=#{originFilename:VARCHAR},
+			filesize=#{filesize:NUMERIC}
+		where nnum = #{nnum}
+	</update>
+	
+</mapper>

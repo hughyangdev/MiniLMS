@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8" ?> 
+<!DOCTYPE mapper  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"  
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="manager.mapper.ManagerMapper">
+
+	<!-- 관리자 목록에 추가 -->
+	<insert id="addManager" parameterType="Manager">
+		insert into
+		manager
+		values(manager_seq.nextval,#{mname},#{mphone},#{maddr},#{memail},
+		#{mpwd},#{mid},#{mgender},0,sysdate)
+	</insert>
+
+	<select id="selectUserByUserid" parameterType="string"
+		resultType="Manager">
+		select * from manager where mid=#{userid}
+	</select>
+
+	<!-- 교수 계정 가져오는 쿼리 -->
+	<select id="getProfList" parameterType="hashMap"
+		resultType="Professor">
+		select * from (select rownum rn, a.* from (select * from
+		professor order by pnum) a)
+		where rn between #{start} and #{end}
+	</select>
+
+	<!-- 교수 계정 수 가져오기 -->
+	<select id="getTotalProfCount" resultType="int">
+		select count(pnum)
+		from
+		professor
+	</select>
+
+	<!-- 관리자 수 가져오기 -->
+	<select id="getTotalAdminCount" resultType="int">
+		select count(mnum)
+		from manager
+	</select>
+
+	<!-- 관리자 계정 가져오는 쿼리 -->
+	<select id="getAdminList" parameterType="hashMap"
+		resultType="Manager">
+		select * from (select rownum rn, a.* from (select * from
+		manager order by mnum) a)
+		where rn between #{start} and #{end}
+	</select>
+
+	<!-- 학생 수 가져오기 -->
+	<select id="getTotalStudentCount" resultType="int">
+		select count(snum)
+		from student
+	</select>
+
+	<!-- 학생 계정 가져오는 쿼리 -->
+	<select id="getStudentList" parameterType="hashMap"
+		resultType="Student">
+		select * from (select rownum rn, a.* from (select * from
+		student order by snum) a)
+		where rn between #{start} and #{end}
+	</select>
+
+	<update id="editProfInfo" parameterType="hashMap">
+		update manager set
+		mphone=#{phone}, memail=#{email} where mnum=#{mnum}
+	</update>
+
+	<update id="changePwd" parameterType="hashMap">
+		update manager set
+		mpwd=#{pwd} where mnum=#{num}
+	</update>
+
+
+</mapper>

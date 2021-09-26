@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE configuration
+PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
+	<typeAliases>
+		<typeAlias alias="Student" type="student.domain.StudentVO" />
+		<typeAlias alias="Professor" type="prof.domain.ProfessorVO" />
+		<typeAlias alias="Manager" type="manager.domain.ManagerVO" />
+		<typeAlias alias="Subject" type="student.domain.SubjectVO" />
+		<typeAlias alias="ClassList"
+			type="student.domain.ClassListVO" />
+		<typeAlias alias="ClassListP" type="prof.domain.ClassListVO" />
+		<typeAlias alias="Rest" type="student.domain.StopSemesterVO" />
+		<typeAlias alias="Score" type="prof.domain.ScoreVO" />
+		<typeAlias alias="Accessment"
+			type="student.domain.AccessmentVO" />
+		<typeAlias alias="RegistClass"
+			type="student.domain.RegistClassVO" />
+		<typeAlias type="manager.domain.NoticeVO" alias="Notice" />
+		<typeAlias type="manager.domain.ScheduleVO" alias="Schedule" />
+		<typeAlias type="prof.domain.ScoreViewVO" alias="ScoreView" />
+		<typeAlias type="board.domain.BoardVO" alias="Board" />
+	</typeAliases>
+
+	<environments default="MyDBCP">
+		<environment id="development">
+			<transactionManager type="JDBC" />
+			<dataSource type="POOLED">
+				<property name="driver"
+					value="oracle.jdbc.driver.OracleDriver" />
+				<property name="url"
+					value="jdbc:oracle:thin:@localhost:1521:XE" />
+				<property name="username" value="school" />
+				<property name="password" value="tiger" />
+			</dataSource>
+		</environment>
+
+		<environment id="MyDBCP">
+			<transactionManager type="JDBC" />
+			<dataSource type="JNDI">
+				<property name="data_source"
+					value="java:comp/env/jdbc/school" />
+			</dataSource>
+		</environment>
+	</environments>
+
+	<mappers>
+		<mapper resource="student/mapper/StudentMapper.xml" />
+		<mapper resource="student/mapper/AccessmentMapper.xml" />
+		<mapper resource="prof/mapper/ProfessorMapper.xml" />
+		<mapper resource="manager/mapper/ManagerMapper.xml" />
+		<mapper resource="common/mapper/ClassListMapper.xml" />
+		<mapper resource="manager/mapper/NoticeMapper.xml" />
+		<mapper resource="manager/mapper/ScheduleMapper.xml" />
+		<mapper resource="board/mapper/BoardMapper.xml" />
+	</mappers>
+</configuration>
+
+

@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8" ?> 
+<!DOCTYPE mapper  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"  
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- 글 목록에 추가 -->
+<mapper namespace="board.mapper.BoardMapper">
+	<insert id="addWrite" parameterType="Board">
+		insert into
+		freeboard
+		values(freeboard_seq.nextval,#{bWriter},#{bTitle},
+		#{bContents:VARCHAR},#{bFile:VARCHAR},#{bPwd},sysdate)
+	</insert>
+
+	<select id="getAllBoard" resultType="Board">
+		select* from freeboard order
+		by bnum desc
+	</select>
+	
+	<select id="getBoardByDate" resultType="Board">
+		select *
+		from(
+		select * from FREEBOARD order by BDATE DESC
+		) where ROWNUM <![CDATA[ <= ]]>
+		3
+	</select>
+
+	<delete id="deleteBoard" parameterType="int">
+		delete from freeboard
+		where bnum=#{bnum}
+	</delete>
+
+	<select id="getMyBoard" resultType="Board" parameterType="int">
+		select
+		* from freeboard where bnum=#{bnum}
+	</select>
+
+	<update id="updateBoard" parameterType="hashMap">
+		update freeboard set
+		bTitle=#{title}, bContents=#{content} where bnum=#{bnum}
+	</update>
+
+</mapper>

@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+ "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="common.mapper.ClassListMapper">
+
+	<!-- 강의 개설 리스트 가져오기 -->
+	<select id="selectByClassList" resultType="ClassListP">
+		select c.lnum,
+		c.SUBJECTCODE, c.LNAME, (select majorname from major where MAJORCODE =
+		s.MAJORCODE) majorname,
+		(select pname from PROFESSOR where pnum =
+		c.pnum) pname
+		from classlist c join subject s
+		on c.subjectcode =
+		s.subjectcode
+	</select>
+
+	<!-- 등록된 게시글 수 가져오기 -->
+	<select id="getTotalSubCount" resultType="int">
+		select count(lnum) from
+		classlist
+	</select>
+
+	<!-- 교번으로 등록된 게시글 수 갸져오기 -->
+	<select id="getMyTotalClassCount" resultType="int"
+		parameterType="int">
+		select count(lnum) from classlist where pnum = #{pnum}
+	</select>
+
+	<select id="listClass" parameterType="hashMap"
+		resultType="ClassListP">
+		select * from( select rownum rn, a.*
+		from ( select c.lnum,
+		c.LNAME, c.CLASSNUM,(select majorname from
+		major where
+		MAJORCODE =
+		s.MAJORCODE) majorname,
+		(select pname from PROFESSOR where
+		pnum =
+		c.pnum) pname
+		from classlist c join subject s on c.subjectcode =
+		s.subjectcode
+		) a) where rn between #{start} and #{end}
+
+	</select>
+
+	<select id="getMyClassList" parameterType="hashMap"
+		resultType="ClassListP">
+		select * from( select rownum rn, a.*
+		from (
+		select c.lnum,
+		c.LNAME, c.CLASSNUM, c.CREDIT,(select majorname from
+		major where
+		MAJORCODE =
+		s.MAJORCODE) majorname,
+		(select pname from PROFESSOR where
+		pnum =
+		c.pnum) pname
+		, (select pnum from PROFESSOR where pnum = c.pnum)
+		pnum
+		from classlist c join subject s on c.subjectcode = s.subjectcode
+		and
+		pnum= #{pnum}) a
+		) where rn between #{start} and #{end}
+	</select>
+
+	<select id="getFindClassList" parameterType="hashMap"
+		resultType="ClassListP">
+		select * from( select rownum rn, a.*
+		from (
+		select c.lnum,
+		c.LNAME, c.CLASSNUM,(select majorname from
+		major where
+		MAJORCODE =
+		s.MAJORCODE) majorname,
+		(select pname from PROFESSOR where
+		pnum =
+		c.pnum) pname
+		, (select pnum from PROFESSOR where pnum = c.pnum)
+		pnum
+
+		from classlist c join subject s on c.subjectcode = s.subjectcode
+		and
+		${type} like '%'||#{lname}||'%'
+		) a
+		) where rn between #{start} and
+		#{end}
+	</select>
+
+	<select id="getFindCount" resultType="int"
+		parameterType="string">
+		select count(lnum) from classlist where lname like
+		'%'||#{lname}||'%'
+	</select>
+
+
+	<select id="getFindCountByProf" resultType="int"
+		parameterType="string">
+		select count(lnum) from CLASSLIST c join professor p on
+		c.PNUM = p.pnum where pname like '%'||#{lname}||'%'
+	</select>
+
+	<select id="getFindCountBySearchName" resultType="int"
+		parameterType="hashMap">
+		select count(lnum) from CLASSLIST c join professor p on
+		c.PNUM = p.pnum where p.pnum=#{pnum} and
+		c.LNAME like
+		'%'||#{searchName}||'%'
+	</select>
+
+	<select id="getFindClassListByPnum" parameterType="hashMap"
+		resultType="ClassListP">
+		select * from(
+		select rownum rn, a.* from
+		( select c.lnum,
+		c.LNAME, c.CLASSNUM,(select majorname
+		from major where
+		MAJORCODE =
+		s.MAJORCODE) majorname,
+		(select pname from PROFESSOR where
+		pnum =
+		c.pnum) pname, (select pnum from
+		PROFESSOR where pnum = c.pnum)
+		pnum
+		from classlist c join subject s
+		on c.subjectcode = s.subjectcode
+		and
+		pnum = #{pnum} and
+		lname like '%'||#{searchName}||'%' )
+		a
+		)
+		where rn
+		between #{start} and #{end}
+	</select>
+
+
+	<!-- 성적관련 메소드 -->
+	<!-- 교수의 개설과목 보기 -->
+	<select id="classByProf" parameterType="int"
+		resultType="ClassListP">
+		select s.grade, s.semester, c.lname, c.lnum
+		from subject s
+		join classlist c
+		on s.subjectcode=c.subjectcode
+		where pnum=#{pnum}
+	</select>
+
+	<!-- 강의를 수강하는 학생 목록 가져오기 -->
+	<select id="studentListByClass" resultType="ScoreView">
+		select distinct sNum, sName,
+		uniname, major, score
+		from score_view
+	</select>
+	<!-- //성적관련 메소드 END -->
+
+</mapper>

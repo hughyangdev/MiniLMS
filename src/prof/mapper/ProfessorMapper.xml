@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"  
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="prof.mapper.ProfessorMapper">
+
+	<!-- 교수목록에 추가 -->
+	<insert id="addProfessor" parameterType="Professor">
+		insert into
+		professor
+		values(professor_seq.nextval,#{pclass},#{pname},#{pmajor},#{pphone},#{paddr},
+		#{pemail},#{ppwd},#{pid},#{pgender},0,sysdate)
+	</insert>
+
+	<select id="selectUserByUserid" parameterType="string"
+		resultType="Professor">
+		select * from professor where pid=#{userid}
+	</select>
+
+	<select id="selectProfInfo" resultType="Professor">
+		select * from PROFESSOR
+		where pnum=1003
+	</select>
+
+	<!-- 회원 정보 수정 -->
+	<update id="editProfInfo" parameterType="Professor">
+		update PROFESSOR set
+		pphone = #{pPhone}, pEmail=#{pEmail} where pnum = #{pNum}
+	</update>
+
+	<!-- 점수를 입력하는 메소드 -->
+	<insert id="insertScore" parameterType="Score">
+		INSERT INTO
+		SCORE(SCORENUM,LNUM,SNUM,SCORE)
+		VALUES(SCORE_SEQ.NEXTVAL,#{lNum},#{sNum},#{score})
+	</insert>
+
+	<!-- 점수를 수정하는 메소드 -->
+	<update id="updateScore" parameterType="ScoreView">
+		UPDATE SCORE SET
+		SCORE=#{score} WHERE SNUM=#{sNum}
+	</update>
+
+	<!-- 성적입력 관련 END -->
+
+	<update id="changePwd" parameterType="hashMap">
+		update professor set
+		ppwd=#{pwd} where pnum=#{num}
+	</update>
+	
+	<!-- 수강신청한 학생 목록 가져오기 -->
+	<select id="getAllClassByPnum" parameterType="int" resultType="RegistClass">
+		select rownum rn, a.* 
+		from ( select r.snum, r.LNUM, r.RSTATE, sname,  semester, grade, c.subjectcode, c.LNAME, c.CREDIT, c.CLASSNUM, pnum
+  		from registclass r join student s on r.snum = s.snum 
+  		join classList c on r.lnum = c.lnum ) a
+  		where pnum = #{pnum}
+	</select>
+	
+	<update id="changeRstate" parameterType="hashMap">
+		update REGISTCLASS set RSTATE = 1 where snum = #{snum} and lnum = #{lnum}
+	</update>
+	
+	<update id="returnRstate" parameterType="hashMap">
+		update REGISTCLASS set RSTATE = 0 where snum = #{snum} and lnum = #{lnum}
+	</update>
+	
+	<!-- 강의 듣는 학생 수 가져오기 -->
+	<select id="getClassStudentCount" parameterType="int" resultType="int">
+		select count(*) from registclass r join classlist c on r.lnum = c.LNUM where r.lnum = #{lnum} and rstate = 1
+	</select>
+	
+	<!-- 강의를 듣는 학생 목록 가져오기 -->
+	<select id="getClassStudentByLnum" parameterType="int" resultType="RegistClass">
+		select rownum rn, a.* from (
+			select r.snum, r.lnum, s.sname, s.major, s.sgender, s.semester, grade, r.rstate
+			from registclass r join student s on r.snum = s.snum ) a
+  			where lnum = #{lnum} and rstate = 1
+	</select>
+	
+</mapper>
